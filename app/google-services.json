@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "918266842761",
+    "project_id": "norondeneme",
+    "storage_bucket": "norondeneme.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918266842761:android:9e32693d1ea3a128044058",
+        "android_client_info": {
+          "package_name": "com.emrecevik.noroncontrolapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYmz7WKYP1yopUrxt7MM5RwG4_OZ_ocUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918266842761:android:f154c3114211c039044058",
+        "android_client_info": {
+          "package_name": "com.sametozbalkan.websocket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYmz7WKYP1yopUrxt7MM5RwG4_OZ_ocUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
