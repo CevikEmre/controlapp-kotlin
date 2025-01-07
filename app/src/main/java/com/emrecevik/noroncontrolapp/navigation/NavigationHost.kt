@@ -12,6 +12,7 @@ import com.emrecevik.noroncontrolapp.view.AddDeviceScreen
 import com.emrecevik.noroncontrolapp.view.DeviceDetailScreen
 import com.emrecevik.noroncontrolapp.view.LoginScreen
 import com.emrecevik.noroncontrolapp.view.MainScreen
+import com.emrecevik.noroncontrolapp.view.ProfileScreen
 import com.emrecevik.noroncontrolapp.view.RegisterScreen
 
 @Composable
@@ -42,6 +43,9 @@ fun NavigationHost() {
         }
         composable(Screen.AddDevice.screen) {
             AddDeviceScreen(navController = navController)
+        }
+        composable(Screen.Profile.screen) {
+            ProfileScreen(navController = navController)
         }
     }
 }

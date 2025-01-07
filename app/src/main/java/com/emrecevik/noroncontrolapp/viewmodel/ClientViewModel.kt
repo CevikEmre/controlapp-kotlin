@@ -19,6 +19,9 @@ class ClientViewModel : ViewModel() {
     private var _clientDetails= MutableStateFlow<ClientDetails?>(null)
     val clientDetails: MutableStateFlow<ClientDetails?> = _clientDetails
 
+    private var _loading = MutableStateFlow(false)
+    val loading: MutableStateFlow<Boolean> = _loading
+
     suspend fun login(username: String, password: String): Boolean {
         return try {
             val response: Response<LoginResponse?>? = ClientService.login(username, password)
@@ -67,34 +70,35 @@ class ClientViewModel : ViewModel() {
             false
         }
     }
-    suspend fun getClientDetails(token: String?): ClientDetails? {
-        return try {
-            val tokenChanged = "Bearer $token"
-            val response: Response<ClientDetails?>? = ClientService.getClientDetails(tokenChanged)
-
-            if (response?.isSuccessful == true) {
-                response.body().also {
-                    Log.e("ClientVM", "Client details fetched successfully: $it")
-                    errorMessage = null
-                    if (it != null) {
-                        _clientDetails.value = it
+        suspend fun getClientDetails(token: String?): ClientDetails? {
+            return try {
+                val tokenChanged = "Bearer $token"
+                val response: Response<ClientDetails?>? = ClientService.getClientDetails(tokenChanged)
+                _loading.value = true
+                if (response?.isSuccessful == true) {
+                    response.body().also {
+                        Log.e("ClientVM", "Client details fetched successfully: $it")
+                        errorMessage = null
+                        if (it != null) {
+                            _clientDetails.value = it
+                        }
                     }
+                } else {
+                    errorMessage = extractErrorMessage(response)
+                    Log.e(
+                        "ClientVM",
+                        "Failed to fetch client details. Code: ${response?.code()}, Error: $errorMessage"
+                    )
+                    null
                 }
-            } else {
-                errorMessage = extractErrorMessage(response)
-                Log.e(
-                    "ClientVM",
-                    "Failed to fetch client details. Code: ${response?.code()}, Error: $errorMessage"
-                )
+            } catch (e: Exception) {
+                errorMessage = "Bir hata oluştu: ${e.localizedMessage}"
+                Log.e("ClientVM", "Error during fetching client details", e)
                 null
+            } finally {
+                _loading.value = false
             }
-        } catch (e: Exception) {
-            errorMessage = "Bir hata oluştu: ${e.localizedMessage}"
-            Log.e("ClientVM", "Error during fetching client details", e)
-            null
         }
-    }
-
 
     private fun extractErrorMessage(response: Response<*>?): String {
         return try {

@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.emrecevik.noroncontrolapp.NoroncontrolappApplication
 import com.emrecevik.noroncontrolapp.model.requestBody.RegisterBody
+import com.emrecevik.noroncontrolapp.navigation.Screen
 import com.emrecevik.noroncontrolapp.viewmodel.ClientViewModel
 import kotlinx.coroutines.launch
 
@@ -136,7 +137,7 @@ fun RegisterScreen(navController: NavController) {
                         val result = clientViewModel.register(registerBody)
                         if (result) {
                             snackbarHostState.showSnackbar("Registration successful!")
-                            navController.popBackStack()
+                            navController.navigate(Screen.Login.screen)
                         } else {
                             snackbarHostState.showSnackbar("Registration failed. Please try again.")
                         }
