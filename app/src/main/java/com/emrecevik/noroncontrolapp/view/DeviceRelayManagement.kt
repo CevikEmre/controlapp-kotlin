@@ -2,7 +2,6 @@ package com.emrecevik.noroncontrolapp.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import com.emrecevik.noroncontrolapp.R
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -15,6 +14,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.*
+import com.emrecevik.noroncontrolapp.R
 import com.emrecevik.noroncontrolapp.model.requestBody.SetRelay
 import com.emrecevik.noroncontrolapp.viewmodel.RelayViewModel
 

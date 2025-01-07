@@ -14,5 +14,5 @@ interface Device {
     suspend fun getDeviceDetail(@Query("deviceId") devId: Int): Response<GetAllDevicesForClient>
 
     @POST("device/addUserToDevice")
-    suspend fun addUserToDevice(@Query("devid") devId: Int, @Query("phone") phone: String) : Response<String?>
+    suspend fun addUserToDevice(@Query("devid") devId: Long, @Query("phone") phone: String) : Response<String?>
 }

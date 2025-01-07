@@ -29,7 +29,7 @@ class DeviceService {
                     }
 
                 } catch (e: Exception) {
-                    Log.e("GetAllDevices", "Error sending login request", e)
+                    Log.e("GetAllDevices", "Error sending GetAllDevices request", e)
                     null
                 }
             }
@@ -60,29 +60,27 @@ class DeviceService {
             }
         }
 
-        suspend fun addUserToDevice(devId: Int, phone: String): Response<String?>? {
+        suspend fun addUserToDevice(devId: Long, phone: String): String {
             return withContext(Dispatchers.IO) {
                 try {
                     val response = RetrofitClient.getClient()
                         .create(Device::class.java)
                         .addUserToDevice(devId, phone)
-                    if (response.isSuccessful) {
-                        response
-                    } else {
-                        val errorCode = response.code()
-                        val errorMessage = response.errorBody()?.string()
-                        Log.e(
-                            "DeviceService",
-                            "addUserToDevice request failed with code: $errorCode, message: $errorMessage"
-                        )
-                        null
-                    }
 
+                    if (response.isSuccessful) {
+                        response.body() ?: "Başarılı: Sunucudan boş yanıt alındı."
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                            ?: "Sunucudan hata alındı. Hata kodu: ${response.code()}"
+                        Log.e("DeviceService", "Error in addUserToDevice: $errorBody")
+                        throw Exception(errorBody) // Hata mesajını doğrudan fırlat
+                    }
                 } catch (e: Exception) {
-                    Log.e("addUserToDevice", "Error sending getDeviceDetail request", e)
-                    null
+                    Log.e("DeviceService", "Error in addUserToDevice: ${e.localizedMessage}")
+                    throw Exception("İşlem başarısız: ${e.localizedMessage}")
                 }
             }
         }
+
     }
 }

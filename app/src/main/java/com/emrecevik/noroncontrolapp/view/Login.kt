@@ -1,5 +1,6 @@
 package com.emrecevik.noroncontrolapp.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -7,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -19,6 +21,7 @@ import com.emrecevik.noroncontrolapp.viewmodel.ClientViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.emrecevik.noroncontrolapp.R
 
 @Composable
 fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -35,8 +38,13 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                 .padding(16.dp)
                 .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Image(
+                painter = painterResource(R.drawable.logo),
+                contentDescription = "Logo",
+                modifier = Modifier.size(200.dp)
+            )
 
             val usernameState = remember { mutableStateOf("emre") }
             OutlinedTextField(

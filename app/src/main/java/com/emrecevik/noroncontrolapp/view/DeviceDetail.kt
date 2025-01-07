@@ -1,14 +1,12 @@
 package com.emrecevik.noroncontrolapp.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +25,7 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
     val device by deviceViewModel.device.collectAsState()
     val isLoading by deviceViewModel.isLoading
     val errorMessage by deviceViewModel.errorMessage.collectAsState()
-    var selectedTab by remember { mutableStateOf(0) } // Tab durum değişkeni
+    var selectedTab by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(deviceId) {
         deviceViewModel.getDeviceDetail(deviceId.toInt())
@@ -55,20 +53,14 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.AccountBox, contentDescription = "Bağlantılar") },
-                    label = { Text("Bağlantılar") }
+                    icon = { Icon(Icons.Default.Build, contentDescription = "Yönetim") },
+                    label = { Text("Yönetim") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Default.DateRange, contentDescription = "Tarihler") },
-                    label = { Text("Tarihler") }
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 },
-                    icon = { Icon(Icons.Default.Info, contentDescription = "Yönetim") },
-                    label = { Text("Yönetim") }
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Person") },
+                    label = { Text("Kişi İşlemleri") }
                 )
             }
         }
@@ -90,8 +82,19 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
                 }
                 device != null -> {
                     when (selectedTab) {
-                        0 -> DeviceDetailTab(device!!)
-                        3 -> DeviceRelayManagementTab(deviceId)
+                        0 -> {
+                            if (device != null) {
+                                DeviceDetailTab(device!!)
+                            } else {
+                                Text(
+                                    text = "Cihaz detayları yükleniyor...",
+                                    modifier = Modifier.align(Alignment.Center),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                        1 -> DeviceRelayManagementTab(deviceId)
+                        2 -> PersonsProcess(deviceId)
                     }
                 }
                 else -> {
@@ -131,16 +134,17 @@ fun DeviceDetailTab(device: GetAllDevicesForClient) {
 
             // Kaydırılabilir Detay Listesi
             val detailItems = listOf(
-                "Cihaz ID" to device.devId.toString(),
+                "Cihaz ID" to (device.devId?.toString() ?: "Bilinmiyor"),
                 "Cihaz Tipi" to (device.deviceType ?: "Bilinmiyor"),
                 "Durum" to (if (device.connected == true) "Bağlı" else "Bağlı Değil"),
                 "M2M Numarası" to (device.m2mNumber ?: "Bilinmiyor"),
                 "M2M Seri Numarası" to (device.m2mSerial ?: "Bilinmiyor"),
                 "Oluşturulma Tarihi" to (device.createdDateTime ?: "Bilinmiyor"),
-                "Aktivasyon Tarihi" to (device.activatedDateTime ?: "Henüz Aktive Edilmedi"),
-                "Aktif Gün Sayısı" to device.activeDays.toString(),
-                "Yıllık Ücret" to "${device.yearlyPrice} $"
+                "Aktivasyon Tarihi" to (device.activatedDateTime ?: "Bilinmiyor"),
+                "Aktif Gün Sayısı" to (device.activeDays?.toString() ?: "Bilinmiyor"),
+                "Yıllık Ücret" to (if (device.yearlyPrice != null) "${device.yearlyPrice} $" else "Bilinmiyor")
             )
+
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

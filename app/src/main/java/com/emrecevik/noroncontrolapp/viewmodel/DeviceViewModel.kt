@@ -17,8 +17,16 @@ class DeviceViewModel : ViewModel() {
     val device: StateFlow<GetAllDevicesForClient?> = _device
 
     val errorMessage = MutableStateFlow<String?>(null)
+    val addUserErrorMessage = MutableStateFlow<String?>(null)
 
     var isLoading = mutableStateOf(false)
+    var isRefreshing = mutableStateOf(false)
+
+    private val _isSuccess = MutableStateFlow(false)
+    val isSuccess: StateFlow<Boolean> = _isSuccess
+
+    private val _isError = MutableStateFlow(false)
+    var isError: StateFlow<Boolean> = _isError
 
     fun fetchDevices() {
         viewModelScope.launch {
@@ -38,6 +46,7 @@ class DeviceViewModel : ViewModel() {
             }
         }
     }
+
     fun getDeviceDetail(devId: Int) {
         viewModelScope.launch {
             isLoading.value = true
@@ -56,22 +65,26 @@ class DeviceViewModel : ViewModel() {
             }
         }
     }
-    fun addUserToDevice(devId: Int, phone: String) {
-        viewModelScope.launch {
-            isLoading.value = true
-            try {
-                val response = DeviceService.addUserToDevice(devId, phone)
-                if (response?.isSuccessful == true) {
-                    errorMessage.value = null
-                } else {
-                    errorMessage.value =
-                        response?.errorBody()?.string() ?: "Sunucudan hata alındı."
-                }
-            } catch (e: Exception) {
-                errorMessage.value = "Cihazları alırken bir hata oluştu: ${e.localizedMessage}"
-            } finally {
-                isLoading.value = false
-            }
+
+    suspend fun addUserToDevice(devId: Long, phone: String) {
+        isRefreshing.value = true
+        try {
+            val responseMessage = DeviceService.addUserToDevice(devId, phone)
+            addUserErrorMessage.value = null
+            _isSuccess.value = true
+            _isError.value = false
+        } catch (e: Exception) {
+            addUserErrorMessage.value = e.localizedMessage
+            _isSuccess.value = false
+            _isError.value = true
+        } finally {
+            isRefreshing.value = false
         }
     }
+
+    fun resetStates() {
+        _isSuccess.value = false
+        _isError.value = false
+    }
 }
+
