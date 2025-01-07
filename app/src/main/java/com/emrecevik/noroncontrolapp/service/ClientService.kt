@@ -4,6 +4,7 @@ package com.emrecevik.noroncontrolapp.service
 import android.util.Log
 import com.emrecevik.noroncontrolapp.interfaces.Client
 import com.emrecevik.noroncontrolapp.model.requestBody.RegisterBody
+import com.emrecevik.noroncontrolapp.model.response.ClientDetails
 import com.emrecevik.noroncontrolapp.model.response.LoginResponse
 import com.emrecevik.noroncontrolapp.model.response.RegisterResponse
 import com.emrecevik.noroncontrolapp.retrofit.RetrofitClient
@@ -73,6 +74,30 @@ class ClientService {
                     } else {
                         val errorCode = response.code()
                         val errorMessage = response.errorBody()?.string()
+                        Log.e(
+                            "RefreshToken",
+                            "RefreshToken request failed with code: $errorCode, message: $errorMessage"
+                        )
+                        null
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("RefreshToken", "Error sending login request", e)
+                    null
+                }
+            }
+        }
+        suspend fun getClientDetails(token: String?): Response<ClientDetails?>?{
+            return withContext(Dispatchers.IO) {
+                try {
+                    val response = RetrofitClient.getClient()
+                        .create(Client::class.java)
+                        .getClientDetails(token = token)
+                    if (response?.isSuccessful == true) {
+                        response
+                    } else {
+                        val errorCode = response?.code()
+                        val errorMessage = response?.errorBody()?.string()
                         Log.e(
                             "RefreshToken",
                             "RefreshToken request failed with code: $errorCode, message: $errorMessage"

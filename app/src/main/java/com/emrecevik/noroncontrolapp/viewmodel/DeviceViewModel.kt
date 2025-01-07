@@ -56,4 +56,22 @@ class DeviceViewModel : ViewModel() {
             }
         }
     }
+    fun addUserToDevice(devId: Int, phone: String) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                val response = DeviceService.addUserToDevice(devId, phone)
+                if (response?.isSuccessful == true) {
+                    errorMessage.value = null
+                } else {
+                    errorMessage.value =
+                        response?.errorBody()?.string() ?: "Sunucudan hata alındı."
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Cihazları alırken bir hata oluştu: ${e.localizedMessage}"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
 }

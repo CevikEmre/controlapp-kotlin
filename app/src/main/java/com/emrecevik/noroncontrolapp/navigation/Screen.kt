@@ -8,4 +8,5 @@ sealed class Screen(
     data object Register: Screen("registerScreen")
     data object Main: Screen("mainScreen")
     data object DeviceDetails: Screen("deviceDetailScreen")
+    data object AddDevice: Screen("addDeviceScreen")
 }

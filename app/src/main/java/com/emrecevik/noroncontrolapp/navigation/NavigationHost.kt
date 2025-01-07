@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.emrecevik.noroncontrolapp.view.AddDeviceScreen
 import com.emrecevik.noroncontrolapp.view.DeviceDetailScreen
 import com.emrecevik.noroncontrolapp.view.LoginScreen
 import com.emrecevik.noroncontrolapp.view.MainScreen
@@ -38,6 +39,9 @@ fun NavigationHost() {
         ) { backStackEntry ->
             val deviceId = backStackEntry.arguments?.getLong("deviceId") ?: 0L
             DeviceDetailScreen(navController = navController, deviceId = deviceId)
+        }
+        composable(Screen.AddDevice.screen) {
+            AddDeviceScreen(navController = navController)
         }
     }
 }

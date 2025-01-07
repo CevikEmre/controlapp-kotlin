@@ -3,6 +3,7 @@ package com.emrecevik.noroncontrolapp.interfaces
 import com.emrecevik.noroncontrolapp.model.response.GetAllDevicesForClient
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface Device {
@@ -12,4 +13,6 @@ interface Device {
     @GET("device/getDeviceDetail")
     suspend fun getDeviceDetail(@Query("deviceId") devId: Int): Response<GetAllDevicesForClient>
 
+    @POST("device/addUserToDevice")
+    suspend fun addUserToDevice(@Query("devid") devId: Int, @Query("phone") phone: String) : Response<String?>
 }

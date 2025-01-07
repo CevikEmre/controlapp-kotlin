@@ -34,7 +34,8 @@ class DeviceService {
                 }
             }
         }
-        suspend fun getDeviceDetail(devId: Int): Response<GetAllDevicesForClient>?{
+
+        suspend fun getDeviceDetail(devId: Int): Response<GetAllDevicesForClient>? {
             return withContext(Dispatchers.IO) {
                 try {
                     val response = RetrofitClient.getClient()
@@ -54,6 +55,31 @@ class DeviceService {
 
                 } catch (e: Exception) {
                     Log.e("getDeviceDetail", "Error sending getDeviceDetail request", e)
+                    null
+                }
+            }
+        }
+
+        suspend fun addUserToDevice(devId: Int, phone: String): Response<String?>? {
+            return withContext(Dispatchers.IO) {
+                try {
+                    val response = RetrofitClient.getClient()
+                        .create(Device::class.java)
+                        .addUserToDevice(devId, phone)
+                    if (response.isSuccessful) {
+                        response
+                    } else {
+                        val errorCode = response.code()
+                        val errorMessage = response.errorBody()?.string()
+                        Log.e(
+                            "DeviceService",
+                            "addUserToDevice request failed with code: $errorCode, message: $errorMessage"
+                        )
+                        null
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("addUserToDevice", "Error sending getDeviceDetail request", e)
                     null
                 }
             }

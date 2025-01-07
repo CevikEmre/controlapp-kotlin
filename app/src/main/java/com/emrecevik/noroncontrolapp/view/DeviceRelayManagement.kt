@@ -17,6 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.*
 import com.emrecevik.noroncontrolapp.model.requestBody.SetRelay
 import com.emrecevik.noroncontrolapp.viewmodel.RelayViewModel
+
 @Composable
 fun DeviceRelayManagementTab(deviceId: Long) {
     val relayVM: RelayViewModel = viewModel()
@@ -29,8 +30,12 @@ fun DeviceRelayManagementTab(deviceId: Long) {
 
     val successAnimation = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.success))
     val errorAnimation = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.error))
+    val connectionErrorAnimation =
+        rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.connection_error))
     var showAnimation by remember { mutableStateOf(false) }
     var isSuccess by remember { mutableStateOf(false) }
+    var isConnectionError by remember { mutableStateOf(false) }
+    var detailedErrorMessage by remember { mutableStateOf("") }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Card(
@@ -111,7 +116,7 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                         val setRelay = SetRelay(
                             setrelay = "1",
                             time = if (timeValue.isEmpty()) "0" else timeValue,
-                            type = "1",
+                            type = "2",
                             deviceId = deviceId.toInt()
                         )
                         relayVM.setRelay(setRelay)
@@ -129,7 +134,6 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                     Text(text = "Komutu Gönder")
                 }
 
-                // Yükleme Durumu
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.padding(vertical = 16.dp))
                 }
@@ -143,7 +147,11 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                     .align(Alignment.Center)
             ) {
-                val composition = if (isSuccess) successAnimation else errorAnimation
+                val composition = when {
+                    isConnectionError -> connectionErrorAnimation
+                    isSuccess -> successAnimation
+                    else -> errorAnimation
+                }
                 Column(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -154,11 +162,27 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                         modifier = Modifier.size(200.dp)
                     )
                     Text(
-                        text = if (isSuccess) "Komut başarıyla gönderildi." else "Komut gönderilemedi.",
+                        text = when {
+                            isSuccess -> "Komut başarıyla gönderildi."
+                            isConnectionError -> "Bağlantı hatası. Lütfen cihazı kontrol edin."
+                            else -> "Komut gönderilemedi."
+                        },
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (isSuccess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        color = when {
+                            isSuccess -> MaterialTheme.colorScheme.primary
+                            isConnectionError -> MaterialTheme.colorScheme.error
+                            else -> MaterialTheme.colorScheme.error
+                        },
                         modifier = Modifier.padding(top = 8.dp)
                     )
+                    if (!isSuccess) {
+                        Text(
+                            text = detailedErrorMessage,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
                 }
             }
         }
@@ -166,9 +190,12 @@ fun DeviceRelayManagementTab(deviceId: Long) {
         LaunchedEffect(relayResponse, errorMessageState) {
             if (relayResponse != null) {
                 isSuccess = true
+                isConnectionError = false
                 showAnimation = true
             } else if (errorMessageState != null) {
                 isSuccess = false
+                isConnectionError = errorMessageState!!.contains("Connection failed", ignoreCase = true)
+                detailedErrorMessage = errorMessageState.toString()
                 showAnimation = true
             }
             if (showAnimation) {
@@ -178,4 +205,3 @@ fun DeviceRelayManagementTab(deviceId: Long) {
         }
     }
 }
-

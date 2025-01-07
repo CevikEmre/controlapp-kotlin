@@ -20,6 +20,9 @@ class RelayViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _connectionError = MutableStateFlow<Boolean>(false)
+    val connectionError: StateFlow<Boolean> = _connectionError
+
     fun setRelay(setRelay: SetRelay) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -31,6 +34,7 @@ class RelayViewModel : ViewModel() {
                     val responseBody = response.body()
                     _relayResponse.value = responseBody
                     _errorMessage.value = null
+                    _connectionError.value = false // Bağlantı hatası yok
                     Log.i("RelayViewModel", "Başarılı Yanıt: $responseBody")
                 } else {
                     // Hata durumunu işleme
@@ -38,13 +42,24 @@ class RelayViewModel : ViewModel() {
                         ?: "Bilinmeyen bir hata oluştu."
                     _errorMessage.value = errorBody
                     _relayResponse.value = null
-                    Log.e("RelayViewModel", "Hata Yanıtı: $errorBody")
+
+                    // Cihaz bağlantısı hatasını tespit etme
+                    if (errorBody.contains("cihaz bağlantısı yok", ignoreCase = true) ||
+                        errorBody.contains("500 Internal Server Error")
+                    ) {
+                        _connectionError.value = true
+                        Log.e("RelayViewModel", "Cihaz bağlantısı yok: $errorBody")
+                    } else {
+                        _connectionError.value = false
+                        Log.e("RelayViewModel", "Hata Yanıtı: $errorBody")
+                    }
                 }
             } catch (e: Exception) {
                 // Beklenmeyen hataları işleme
                 val exceptionMessage = "Relay komutu gönderilirken bir hata oluştu: ${e.localizedMessage}"
                 _errorMessage.value = exceptionMessage
                 _relayResponse.value = null
+                _connectionError.value = true
                 Log.e("RelayViewModel", exceptionMessage, e)
             } finally {
                 _isLoading.value = false

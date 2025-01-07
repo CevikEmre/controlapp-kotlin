@@ -1,10 +1,13 @@
 package com.emrecevik.noroncontrolapp.interfaces
 
 import com.emrecevik.noroncontrolapp.model.requestBody.RegisterBody
+import com.emrecevik.noroncontrolapp.model.response.ClientDetails
 import com.emrecevik.noroncontrolapp.model.response.LoginResponse
 import com.emrecevik.noroncontrolapp.model.response.RegisterResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -17,4 +20,7 @@ interface Client {
 
     @POST("client/refreshToken")
     suspend fun refreshToken(@Query("refreshToken") refreshToken: String): Response<LoginResponse?>
+
+    @GET("client/clientDetails")
+    suspend fun getClientDetails(@Header("Authorization") token: String?): Response<ClientDetails?>?
 }
