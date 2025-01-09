@@ -2,7 +2,8 @@ package com.emrecevik.noroncontrolapp.service
 
 import android.util.Log
 import com.emrecevik.noroncontrolapp.interfaces.Device
-import com.emrecevik.noroncontrolapp.model.response.GetAllDevicesForClient
+import com.emrecevik.noroncontrolapp.model.response.Devices
+import com.emrecevik.noroncontrolapp.model.response.OtherClient
 import com.emrecevik.noroncontrolapp.retrofit.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,7 +11,7 @@ import retrofit2.Response
 
 class DeviceService {
     companion object {
-        suspend fun getAllDevicesForClient(): Response<List<GetAllDevicesForClient>>? {
+        suspend fun getAllDevicesForClient(): Response<List<Devices>>? {
             return withContext(Dispatchers.IO) {
                 try {
                     val response = RetrofitClient.getClient()
@@ -35,7 +36,7 @@ class DeviceService {
             }
         }
 
-        suspend fun getDeviceDetail(devId: Int): Response<GetAllDevicesForClient>? {
+        suspend fun getDeviceDetail(devId: Long): Response<Devices>? {
             return withContext(Dispatchers.IO) {
                 try {
                     val response = RetrofitClient.getClient()
@@ -82,5 +83,51 @@ class DeviceService {
             }
         }
 
+        suspend fun removeUserFromDevice(devId: Long, phone: String): String {
+            return withContext(Dispatchers.IO) {
+                try {
+                    val response = RetrofitClient.getClient()
+                        .create(Device::class.java)
+                        .removeUserFromDevice(devId, phone)
+
+                    if (response.isSuccessful) {
+                        response.body() ?: "Başarılı: Sunucudan boş yanıt alındı."
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                            ?: "Sunucudan hata alındı. Hata kodu: ${response.code()}"
+                        Log.e("DeviceService", "Error in removeUserFromDevice: $errorBody")
+                        throw Exception(errorBody)
+                    }
+                } catch (e: Exception) {
+                    Log.e("DeviceService", "Error in removeUserFromDevice: ${e.localizedMessage}")
+                    throw Exception("İşlem başarısız: ${e.localizedMessage}")
+                }
+            }
+        }
+
+        suspend fun getUsersForDevice(deviceId: Long): List<OtherClient?>? {
+            return withContext(Dispatchers.IO) {
+                try {
+                    val response = RetrofitClient.getClient()
+                        .create(Device::class.java)
+                        .getUsersForDevice(deviceId)
+                    if (response.isSuccessful) {
+                        response.body()
+                    } else {
+                        val errorCode = response.code()
+                        val errorMessage = response.errorBody()?.string()
+                        Log.e(
+                            "DeviceService",
+                            "getUsersForDevice request failed with code: $errorCode, message: $errorMessage"
+                        )
+                        null
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("getUsersForDevice", "Error sending getUsersForDevice request", e)
+                    null
+                }
+            }
+        }
     }
 }

@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.emrecevik.noroncontrolapp.model.response.GetAllDevicesForClient
+import com.emrecevik.noroncontrolapp.model.response.Devices
 import com.emrecevik.noroncontrolapp.viewmodel.DeviceViewModel
 
 
@@ -28,7 +28,7 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(deviceId) {
-        deviceViewModel.getDeviceDetail(deviceId.toInt())
+        deviceViewModel.getDeviceDetail(deviceId)
     }
 
     Scaffold(
@@ -43,25 +43,29 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
             )
         },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.Info, contentDescription = "Detaylar") },
-                    label = { Text("Detaylar") }
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.Build, contentDescription = "Yönetim") },
-                    label = { Text("Yönetim") }
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Person") },
-                    label = { Text("Kişi İşlemleri") }
-                )
+            device?.let { nonNullDevice ->
+                NavigationBar {
+                    NavigationBarItem(
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        icon = { Icon(Icons.Default.Info, contentDescription = "Detaylar") },
+                        label = { Text("Detaylar") }
+                    )
+                    NavigationBarItem(
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        icon = { Icon(Icons.Default.Build, contentDescription = "Yönetim") },
+                        label = { Text("Yönetim") }
+                    )
+                    if (nonNullDevice.isAdmin) {
+                        NavigationBarItem(
+                            selected = selectedTab == 2,
+                            onClick = { selectedTab = 2 },
+                            icon = { Icon(Icons.Default.Person, contentDescription = "Person") },
+                            label = { Text("Kişi İşlemleri") }
+                        )
+                    }
+                }
             }
         }
     ) { padding ->
@@ -94,7 +98,7 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
                             }
                         }
                         1 -> DeviceRelayManagementTab(deviceId)
-                        2 -> PersonsProcess(deviceId)
+                        2 -> if (device!!.isAdmin) PersonsProcess(device!!)
                     }
                 }
                 else -> {
@@ -112,7 +116,7 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
 
 
 @Composable
-fun DeviceDetailTab(device: GetAllDevicesForClient) {
+fun DeviceDetailTab(device: Devices) {
     Card(
         modifier = Modifier
             .fillMaxSize() // Kart tüm ekranı kaplasın
@@ -134,6 +138,7 @@ fun DeviceDetailTab(device: GetAllDevicesForClient) {
 
             // Kaydırılabilir Detay Listesi
             val detailItems = listOf(
+                "Yetki" to (if (device.isAdmin) "Admin" else "Kullanıcı"),
                 "Cihaz ID" to (device.devId?.toString() ?: "Bilinmiyor"),
                 "Cihaz Tipi" to (device.deviceType ?: "Bilinmiyor"),
                 "Durum" to (if (device.connected == true) "Bağlı" else "Bağlı Değil"),

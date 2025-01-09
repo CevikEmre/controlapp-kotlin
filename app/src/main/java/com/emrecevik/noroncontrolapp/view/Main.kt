@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.emrecevik.noroncontrolapp.NoroncontrolappApplication
 import com.emrecevik.noroncontrolapp.R
 import com.emrecevik.noroncontrolapp.model.response.ClientDetails
-import com.emrecevik.noroncontrolapp.model.response.GetAllDevicesForClient
+import com.emrecevik.noroncontrolapp.model.response.Devices
 import com.emrecevik.noroncontrolapp.navigation.Screen
 import com.emrecevik.noroncontrolapp.session.SessionManager
 import com.emrecevik.noroncontrolapp.viewmodel.ClientViewModel
@@ -56,17 +56,18 @@ fun MainScreen(navController: NavController) {
             DrawerContent(
                 onLogout = {
                     navController.popBackStack()
-                    scope.launch { drawerState.close() } // Logout sonrası drawer'ı kapat
+                    scope.launch { drawerState.close() }
                 },
                 clientDetails = clientDetails,
                 drawerState = drawerState
             )
-        }
+        },
+        scrimColor = MaterialTheme.colorScheme.scrim.copy(0.8f)
     ) {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable( // Drawer dışında bir yere tıklanınca drawer'ı kapat
+                .clickable(
                     enabled = drawerState.isOpen,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -76,7 +77,7 @@ fun MainScreen(navController: NavController) {
                 FloatingActionButton(
                     onClick = {
                         navController.navigate(Screen.AddDevice.screen)
-                        scope.launch { drawerState.close() } // Navigate sonrası drawer'ı kapat
+                        scope.launch { drawerState.close() }
                     },
                     modifier = Modifier.padding(16.dp)
                 ) {
@@ -101,12 +102,7 @@ fun MainScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = "Ana Ekrana Hoş Geldiniz!",
-                    style = MaterialTheme.typography.headlineMedium
-                )
 
-                Spacer(modifier = Modifier.height(24.dp))
 
                 when {
                     isLoading -> {
@@ -228,11 +224,8 @@ fun DrawerContent(
     }
 }
 
-
-// Menü Elemanları İçin Veri Sınıfı
 data class MenuItem(val title: String, val icon: ImageVector, val onClick: () -> Unit)
 
-// Menü Elemanları Listesi
 val menuItems = listOf(
     MenuItem(
         title = "Profil",
@@ -252,7 +245,7 @@ val menuItems = listOf(
 
 
 @Composable
-fun DeviceItem(device: GetAllDevicesForClient, navController: NavController) {
+fun DeviceItem(device: Devices, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -269,7 +262,7 @@ fun DeviceItem(device: GetAllDevicesForClient, navController: NavController) {
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "Aktif Durum: ${if (device.connected) "Bağlı" else "Bağlı Değil"}",
+                text = "Yetki: ${if (device.isAdmin) "Admin" else "Kullanıcı"}",
                 style = MaterialTheme.typography.bodySmall
             )
         }

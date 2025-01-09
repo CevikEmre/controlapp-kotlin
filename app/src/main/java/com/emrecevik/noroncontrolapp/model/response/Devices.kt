@@ -3,7 +3,7 @@ package com.emrecevik.noroncontrolapp.model.response
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class GetAllDevicesForClient(
+data class Devices(
     @SerializedName("id")
     @Expose
     val id: Long,
@@ -55,6 +55,10 @@ data class GetAllDevicesForClient(
     @SerializedName("deviceType")
     @Expose
     val deviceType: String,
+
+    @SerializedName("isAdmin")
+    @Expose
+    val isAdmin: Boolean,
 )
 
 data class OtherClient(

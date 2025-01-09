@@ -41,6 +41,7 @@ import com.emrecevik.noroncontrolapp.R
 import com.emrecevik.noroncontrolapp.session.SessionManager
 import com.emrecevik.noroncontrolapp.viewmodel.ClientViewModel
 import com.emrecevik.noroncontrolapp.viewmodel.DeviceViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,8 +55,8 @@ fun AddDeviceScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val tfValue = remember { mutableStateOf<String>("") }
 
-    val isSuccess = deviceVM.isSuccess.collectAsState()
-    val isError = deviceVM.isError.collectAsState()
+    val isSuccess = deviceVM.addSuccess.collectAsState()
+    val isError = deviceVM.addError.collectAsState()
     val errorMessage = deviceVM.addUserErrorMessage.collectAsState()
 
     val successComposition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.success))
@@ -104,10 +105,9 @@ fun AddDeviceScreen(navController: NavController) {
                             try {
                                 val deviceId = tfValue.value.toLongOrNull()
                                 val phone = clientDetails.value?.phone.orEmpty()
-
                                 if (deviceId != null && phone.isNotEmpty()) {
                                     deviceVM.addUserToDevice(deviceId, phone)
-                                    kotlinx.coroutines.delay(3000)
+                                    delay(3000)
                                     deviceVM.resetStates()
                                 } else {
                                     deviceVM.addUserErrorMessage.value = "Geçersiz cihaz ID veya telefon numarası."
@@ -117,7 +117,7 @@ fun AddDeviceScreen(navController: NavController) {
                             }
                         }
                     },
-                    enabled = !deviceVM.isRefreshing.value // Yükleme sırasında butonu devre dışı bırak
+                    enabled = !deviceVM.isRefreshing.value
                 ) {
                     Text("Cihaz Ekle")
                 }
