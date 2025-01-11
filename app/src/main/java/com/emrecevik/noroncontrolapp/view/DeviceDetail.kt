@@ -1,7 +1,6 @@
 package com.emrecevik.noroncontrolapp.view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Build
@@ -11,10 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.emrecevik.noroncontrolapp.model.response.Devices
+import com.emrecevik.noroncontrolapp.view.tabs.DeviceDetailTab
+import com.emrecevik.noroncontrolapp.view.tabs.DeviceRelayManagementTab
+import com.emrecevik.noroncontrolapp.view.tabs.PersonsProcess
 import com.emrecevik.noroncontrolapp.viewmodel.DeviceViewModel
 
 
@@ -113,86 +113,3 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
     }
 }
 
-
-
-@Composable
-fun DeviceDetailTab(device: Devices) {
-    Card(
-        modifier = Modifier
-            .fillMaxSize() // Kart tüm ekranı kaplasın
-            .padding(16.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Cihaz Detayları",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Kaydırılabilir Detay Listesi
-            val detailItems = listOf(
-                "Yetki" to (if (device.isAdmin) "Admin" else "Kullanıcı"),
-                "Cihaz ID" to (device.devId?.toString() ?: "Bilinmiyor"),
-                "Cihaz Tipi" to (device.deviceType ?: "Bilinmiyor"),
-                "Durum" to (if (device.connected == true) "Bağlı" else "Bağlı Değil"),
-                "M2M Numarası" to (device.m2mNumber ?: "Bilinmiyor"),
-                "M2M Seri Numarası" to (device.m2mSerial ?: "Bilinmiyor"),
-                "Oluşturulma Tarihi" to (device.createdDateTime ?: "Bilinmiyor"),
-                "Aktivasyon Tarihi" to (device.activatedDateTime ?: "Bilinmiyor"),
-                "Aktif Gün Sayısı" to (device.activeDays?.toString() ?: "Bilinmiyor"),
-                "Yıllık Ücret" to (if (device.yearlyPrice != null) "${device.yearlyPrice} $" else "Bilinmiyor")
-            )
-
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp) // Kartlar arasında boşluk
-            ) {
-                items(detailItems.size) {
-                    val item = detailItems[it]
-                    DetailCard(label = item.first, value = item.second)
-                }
-            }
-
-        }
-    }
-}
-
-@Composable
-fun DetailCard(label: String, value: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 4.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-    }
-}

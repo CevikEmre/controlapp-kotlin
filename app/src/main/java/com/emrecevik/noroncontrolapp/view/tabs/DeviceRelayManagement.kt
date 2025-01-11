@@ -1,4 +1,4 @@
-package com.emrecevik.noroncontrolapp.view
+package com.emrecevik.noroncontrolapp.view.tabs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,6 +17,7 @@ import com.airbnb.lottie.compose.*
 import com.emrecevik.noroncontrolapp.R
 import com.emrecevik.noroncontrolapp.model.requestBody.SetRelay
 import com.emrecevik.noroncontrolapp.viewmodel.RelayViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun DeviceRelayManagementTab(deviceId: Long) {
@@ -199,7 +200,7 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                 showAnimation = true
             }
             if (showAnimation) {
-                kotlinx.coroutines.delay(3000) // 3 saniye
+                delay(3000) // 3 saniye
                 showAnimation = false
             }
         }

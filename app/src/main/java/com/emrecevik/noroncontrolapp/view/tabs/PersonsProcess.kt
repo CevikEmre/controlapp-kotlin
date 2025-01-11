@@ -1,4 +1,4 @@
-package com.emrecevik.noroncontrolapp.view
+package com.emrecevik.noroncontrolapp.view.tabs
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
