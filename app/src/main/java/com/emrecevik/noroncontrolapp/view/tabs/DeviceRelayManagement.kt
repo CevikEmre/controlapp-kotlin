@@ -29,21 +29,21 @@ import kotlinx.coroutines.launch
 @Composable
 fun DeviceRelayManagementTab(deviceId: Long) {
     val relayVM: RelayViewModel = viewModel()
+
     val relayList = listOf(
         Relay(R.drawable.power, "Röle"),
         Relay(R.drawable.macro, "Macro"),
         Relay(R.drawable.device_info, "Fan"),
     )
 
-    var timeValue by remember { mutableLongStateOf(0L) } // Toplam süreyi milisaniye olarak tutuyoruz
+    var timeValue by remember { mutableLongStateOf(0L) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val isLoading by relayVM.isLoading.collectAsState()
+    val isLoading by relayVM.setRelayLoading.collectAsState()
     val relayResponse by relayVM.relayResponse.collectAsState()
     val errorMessageState by relayVM.errorMessage.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
-    // Modal Bottom Sheet State
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
@@ -108,7 +108,7 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(16.dp),
+                                        .padding(8.dp),
                                     verticalArrangement = Arrangement.Center,
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
@@ -131,7 +131,6 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                 }
             }
 
-            // Modal Bottom Sheet
             if (bottomSheetState.isVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {
@@ -147,27 +146,24 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                         when (selectedIndex) {
                             0 -> TimedCommandSheet(
                                 timeValue = timeValue,
-                                onTimeValueChange = { newValue ->
-                                    timeValue = newValue
-                                    errorMessage = null
-                                },
+                                onTimeValueChange = { newValue -> timeValue = newValue },
                                 errorMessage = errorMessage,
-                                onSendCommand = {
+                                onSendCommand = { relayId, time ->
                                     coroutineScope.launch {
                                         val setRelay = SetRelay(
-                                            setrelay = "1",
-                                            time = if (timeValue == 0L) "0" else timeValue.toString(),
+                                            setrelay = relayId,
+                                            time = time.toString(),
                                             type = "2",
                                             deviceId = deviceId.toInt()
                                         )
                                         relayVM.setRelay(setRelay)
                                         bottomSheetState.hide()
                                     }
-                                }
+                                },
+                                deviceId = deviceId
                             )
 
                             1 -> {
-                                // Örnek: index 1 için farklı bir içerik
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -179,7 +175,6 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                                         style = MaterialTheme.typography.titleMedium,
                                         modifier = Modifier.padding(bottom = 16.dp)
                                     )
-                                    // Buraya özel komut gönderme UI'ı ekleyebilirsiniz
                                     var customCommand by remember { mutableStateOf("") }
                                     var customError by remember { mutableStateOf<String?>(null) }
 
@@ -241,7 +236,6 @@ fun DeviceRelayManagementTab(deviceId: Long) {
                 )
             }
 
-            // Animasyon Gösterimi
             if (showAnimation) {
                 Box(
                     modifier = Modifier

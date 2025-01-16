@@ -185,7 +185,7 @@ fun DrawerContent(
                         .padding(vertical = 8.dp)
                         .clickable {
                             item.onClick()
-                            scope.launch { drawerState.close() } // Menü seçeneğine tıklanınca drawer'ı kapat
+                            scope.launch { drawerState.close() }
                         },
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
@@ -238,31 +238,30 @@ val menuItems = listOf(
     MenuItem(
         title = "Ayarlar",
         icon = Icons.Default.Settings,
-        onClick = { /* Ayarlar sayfasına git */ }
+        onClick = { navController.navigate(Screen.Settings.screen) }
     ),
-
-    )
+)
 
 
 @Composable
-fun DeviceItem(device: Devices, navController: NavController) {
+fun DeviceItem(device: Devices?, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
-                navController.navigate("${Screen.DeviceDetails.screen}/${device.devId}")
+                navController.navigate("${Screen.DeviceDetails.screen}/${device?.devId}")
             },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Cihaz ID: ${device.devId}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Cihaz ID: ${device?.devId}", style = MaterialTheme.typography.bodyMedium)
             Text(
-                text = "Cihaz Tipi: ${device.deviceType}",
+                text = "Cihaz Tipi: ${device?.deviceType}",
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "Yetki: ${if (device.isAdmin) "Admin" else "Kullanıcı"}",
+                text = "Yetki: ${if (device?.isAdmin ?: false) "Admin" else "Kullanıcı"}",
                 style = MaterialTheme.typography.bodySmall
             )
         }

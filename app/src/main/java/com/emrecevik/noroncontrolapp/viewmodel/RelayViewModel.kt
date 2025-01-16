@@ -3,7 +3,9 @@ package com.emrecevik.noroncontrolapp.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.emrecevik.noroncontrolapp.model.requestBody.DeviceInfoBody
 import com.emrecevik.noroncontrolapp.model.requestBody.SetRelay
+import com.emrecevik.noroncontrolapp.model.response.DeviceInfoResponse
 import com.emrecevik.noroncontrolapp.service.RelayService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,23 +16,29 @@ class RelayViewModel : ViewModel() {
     private val _relayResponse = MutableStateFlow<Map<String, String>?>(null)
     val relayResponse: StateFlow<Map<String, String>?> = _relayResponse
 
+    private val _deviceInfoResponse = MutableStateFlow<DeviceInfoResponse?>(null)
+    val deviceInfoResponse: StateFlow<DeviceInfoResponse?> = _deviceInfoResponse
+
+    private val _deviceInfoLoading = MutableStateFlow(false)
+    val deviceInfoLoading: StateFlow<Boolean> = _deviceInfoLoading
+
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _setRelayLoading = MutableStateFlow(false)
+    val setRelayLoading: StateFlow<Boolean> = _setRelayLoading
 
     private val _connectionError = MutableStateFlow<Boolean>(false)
     val connectionError: StateFlow<Boolean> = _connectionError
 
+
     fun setRelay(setRelay: SetRelay) {
         viewModelScope.launch {
-            _isLoading.value = true
+            _setRelayLoading.value = true
             try {
                 val response = RelayService.setRelay(setRelay)
 
                 if (response?.isSuccessful == true) {
-                    // Başarılı yanıtı işleme
                     val responseBody = response.body()
                     _relayResponse.value = responseBody
                     _errorMessage.value = null
@@ -62,8 +70,32 @@ class RelayViewModel : ViewModel() {
                 _connectionError.value = true
                 Log.e("RelayViewModel", exceptionMessage, e)
             } finally {
-                _isLoading.value = false
-                Log.d("RelayViewModel", "İşlem tamamlandı. Yükleme durumu: ${_isLoading.value}")
+                _setRelayLoading.value = false
+                Log.d("RelayViewModel", "İşlem tamamlandı. Yükleme durumu: ${_setRelayLoading.value}")
+            }
+        }
+    }
+
+    fun getDeviceInfo(deviceInfoBody: DeviceInfoBody) {
+        viewModelScope.launch {
+            _deviceInfoLoading.value = true
+            try {
+                val response = RelayService.getDeviceInfo(deviceInfoBody)
+
+                if (response?.isSuccessful == true) {
+                    val responseBody = response.body()
+                    _deviceInfoResponse.value = responseBody
+                    Log.i("RelayViewModel", "Başarılı Yanıt: $responseBody")
+                } else {
+                    val errorBody = response?.errorBody()?.string()
+                        ?: "Bilinmeyen bir hata oluştu."
+                }
+            } catch (e: Exception) {
+                val exceptionMessage = "getDeviceInfo gönderilirken bir hata oluştu: ${e.localizedMessage}"
+                Log.e("RelayViewModel", exceptionMessage, e)
+            } finally {
+                _deviceInfoLoading.value = false
+                Log.d("RelayViewModel", "İşlem tamamlandı. Yükleme durumu: ${_setRelayLoading.value}")
             }
         }
     }

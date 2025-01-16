@@ -10,5 +10,6 @@ sealed class Screen(
     data object DeviceDetails: Screen("deviceDetailScreen")
     data object AddDevice: Screen("addDeviceScreen")
     data object Profile: Screen("profileScreen")
-
+    data object Settings: Screen("settingsScreen")
+    data object DeviceSettings:Screen("deviceSettingsScreen")
 }

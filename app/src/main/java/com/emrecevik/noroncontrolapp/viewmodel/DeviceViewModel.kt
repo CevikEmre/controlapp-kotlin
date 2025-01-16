@@ -35,6 +35,15 @@ class DeviceViewModel : ViewModel() {
 
     val responseMessage = MutableStateFlow<String?>(null)
 
+    private val _relays = MutableStateFlow<List<String?>?>(emptyList())
+    val relays: StateFlow<List<String?>?> = _relays
+
+    private val _relayLoading = MutableStateFlow(false)
+    val relayLoading: StateFlow<Boolean> = _relayLoading
+
+    private val _updateRelayResponse = MutableStateFlow<String?>(null)
+    val updateRelayResponse: StateFlow<String?> = _updateRelayResponse
+
     fun fetchDevices() {
         viewModelScope.launch {
             isLoading.value = true
@@ -109,6 +118,47 @@ class DeviceViewModel : ViewModel() {
         }
     }
 
+    fun getRelays(deviceId: Long) {
+        viewModelScope.launch {
+            _relayLoading.value = true
+            try {
+                val response = DeviceService.getRelays(deviceId)
+                if (response != null) {
+                    _relays.value = response
+                    errorMessage.value = null
+                } else {
+                    errorMessage.value = "Sunucudan geçerli bir yanıt alınamadı."
+                }
+            } catch (e: Exception) {
+                errorMessage.value =
+                    "Cihaz kullanıcılarını alırken bir hata oluştu: ${e.localizedMessage}"
+            } finally {
+                _relayLoading.value = false
+            }
+        }
+    }
+
+    fun updateRelays(deviceId: Long, relays: List<String>, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _relayLoading.value = true
+            try {
+                val response = DeviceService.updateRelays(deviceId, relays)
+                if (response != null) {
+                    _updateRelayResponse.value = response
+                    errorMessage.value = null
+                    getRelays(deviceId) // Röleleri yeniden çek
+                    onSuccess() // Başarılı işlem callback'i
+                } else {
+                    errorMessage.value = "Sunucudan geçerli bir yanıt alınamadı."
+                }
+            } catch (e: Exception) {
+                errorMessage.value =
+                    "Cihaz kullanıcılarını alırken bir hata oluştu: ${e.localizedMessage}"
+            } finally {
+                _relayLoading.value = false
+            }
+        }
+    }
 
 
 
@@ -116,7 +166,6 @@ class DeviceViewModel : ViewModel() {
         viewModelScope.launch {
             isRefreshing.value = true
             try {
-                // Servis katmanındaki fonksiyonu çağırıyoruz
                 val response = DeviceService.getUsersForDevice(deviceId)
                 if (response != null) {
                     _users.value = response
@@ -125,7 +174,8 @@ class DeviceViewModel : ViewModel() {
                     errorMessage.value = "Sunucudan geçerli bir yanıt alınamadı."
                 }
             } catch (e: Exception) {
-                errorMessage.value = "Cihaz kullanıcılarını alırken bir hata oluştu: ${e.localizedMessage}"
+                errorMessage.value =
+                    "Cihaz kullanıcılarını alırken bir hata oluştu: ${e.localizedMessage}"
             } finally {
                 isRefreshing.value = false
             }

@@ -1,5 +1,7 @@
 package com.emrecevik.noroncontrolapp.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.emrecevik.noroncontrolapp.view.tabs.DeviceDetailTab
+import com.emrecevik.noroncontrolapp.view.tabs.DeviceInfoTab
 import com.emrecevik.noroncontrolapp.view.tabs.DeviceRelayManagementTab
 import com.emrecevik.noroncontrolapp.view.tabs.PersonsProcess
 import com.emrecevik.noroncontrolapp.viewmodel.DeviceViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
@@ -65,6 +69,12 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
                             label = { Text("Kişi İşlemleri") }
                         )
                     }
+                    NavigationBarItem(
+                        selected = selectedTab == 3,
+                        onClick = { selectedTab = 3 },
+                        icon = { Icon(Icons.Default.Info, contentDescription = "Detaylar") },
+                        label = { Text("Cihaz Durumu") }
+                    )
                 }
             }
         }
@@ -99,6 +109,7 @@ fun DeviceDetailScreen(navController: NavController, deviceId: Long) {
                         }
                         1 -> DeviceRelayManagementTab(deviceId)
                         2 -> if (device!!.isAdmin) PersonsProcess(device!!)
+                        3 -> DeviceInfoTab(deviceId)
                     }
                 }
                 else -> {

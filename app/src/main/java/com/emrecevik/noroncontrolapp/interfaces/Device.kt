@@ -3,9 +3,12 @@ package com.emrecevik.noroncontrolapp.interfaces
 import com.emrecevik.noroncontrolapp.model.response.Devices
 import com.emrecevik.noroncontrolapp.model.response.OtherClient
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Device {
@@ -24,4 +27,10 @@ interface Device {
 
     @GET("device/getUsersForDevice")
     suspend fun getUsersForDevice(@Query("deviceId") deviceId: Long): Response<List<OtherClient?>?>
+
+    @GET("device/{deviceId}/relays")
+    suspend fun getDeviceRelays(@Path("deviceId") deviceId: Long): Response<List<String?>?>
+
+    @PUT("device/{deviceId}/relays")
+    suspend fun updateDeviceRelays(@Path("deviceId") deviceId: Long, @Body relays: List<String>): Response<String?>
 }

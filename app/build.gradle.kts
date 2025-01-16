@@ -63,6 +63,7 @@ dependencies {
 
     // Navigation Compose
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.google.accompanist.swiperefresh)
 
     // Firebase Bağımlılıkları
     implementation(platform(libs.firebase.bom)) // Firebase BOM

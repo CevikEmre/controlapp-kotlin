@@ -129,5 +129,55 @@ class DeviceService {
                 }
             }
         }
+
+        suspend fun getRelays(deviceId: Long): List<String?>? {
+            return withContext(Dispatchers.IO) {
+                try {
+                    val response = RetrofitClient.getClient()
+                        .create(Device::class.java)
+                        .getDeviceRelays(deviceId)
+                    if (response.isSuccessful) {
+                        response.body()
+                    } else {
+                        val errorCode = response.code()
+                        val errorMessage = response.errorBody()?.string()
+                        Log.e(
+                            "DeviceService",
+                            "getRelays request failed with code: $errorCode, message: $errorMessage"
+                        )
+                        null
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("getRelays", "Error sending getRelays request", e)
+                    null
+                }
+            }
+        }
+
+        suspend fun updateRelays(deviceId: Long,relays:List<String>): String? {
+            return withContext(Dispatchers.IO) {
+                try {
+                    val response = RetrofitClient.getClient()
+                        .create(Device::class.java)
+                        .updateDeviceRelays(deviceId,relays)
+                    if (response.isSuccessful) {
+                        response.body()
+                    } else {
+                        val errorCode = response.code()
+                        val errorMessage = response.errorBody()?.string()
+                        Log.e(
+                            "DeviceService",
+                            "updateRelays request failed with code: $errorCode, message: $errorMessage"
+                        )
+                        null
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("updateRelays", "Error sending updateRelays request", e)
+                    null
+                }
+            }
+        }
     }
 }
