@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -80,7 +81,8 @@ fun DeviceSettings(navController: NavController, deviceId: Long) {
                         onDismissRequest = { isBottomSheetVisible.value = false },
                         sheetState = rememberModalBottomSheetState(),
                         shape = RoundedCornerShape(12.dp),
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.wrapContentSize()
                     ) {
                         selectedIndex.value?.let { index ->
                             when (index) {

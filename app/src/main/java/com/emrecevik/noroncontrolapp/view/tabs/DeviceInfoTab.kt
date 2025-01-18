@@ -71,9 +71,9 @@ fun DeviceInfoTab(deviceId: Long) {
                     }
 
                     // Cihaz bilgileri
-                    DeviceInfoRow(label = "Input 1", value = "Duration: ${formatTime(info.time1)}")
-                    DeviceInfoRow(label = "Input 2", value = "Duration: ${formatTime(info.time2)}")
-                    DeviceInfoRow(label = "Input 3", value = "Duration: ${formatTime(info.time3)}")
+                    DeviceInfoRow(label = "Motor çalışma durumu", value = "Duration: ${formatTime(info.time1)}")
+                    DeviceInfoRow(label = "Faz Arızası", value = "Duration: ${formatTime(info.time2)}")
+                    DeviceInfoRow(label = "Termik Arızası", value = "Duration: ${formatTime(info.time3)}")
                     DeviceInfoRow(label = "Relay 1", value = info.relay1)
                     DeviceInfoRow(label = "Relay 2", value = info.relay2)
                     DeviceInfoRow(label = "Relay 3", value = info.relay3)

@@ -43,16 +43,16 @@ fun DeviceSelection(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-               when{
-                   devices.value.isNullOrEmpty() -> {
-                       item {
-                           Text("Yüklenecek cihaz yok")
-                       }
-                   }
-               }
+                when {
+                    devices.value.isNullOrEmpty() -> {
+                        item {
+                            Text("Yüklenecek cihaz yok")
+                        }
+                    }
+                }
                 items(devices.value!!.size) { index ->
                     val device = devices.value!![index]
-                    DeviceCard(device,navController)
+                    DeviceCard(device, navController)
                 }
             }
         }

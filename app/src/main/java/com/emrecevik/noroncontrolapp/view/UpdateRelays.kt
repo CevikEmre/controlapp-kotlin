@@ -22,10 +22,10 @@ import kotlinx.coroutines.launch
 fun UpdateRelays(deviceId: Long) {
     val deviceVM: DeviceViewModel = viewModel()
     val relays = deviceVM.relays.collectAsState()
-    val isLoading = deviceVM.relayLoading.collectAsState() // Yükleme durumunu dinler.
-    var isEditing by remember { mutableStateOf(false) } // Düzenleme modunu kontrol eder.
-    val updatedRelays = remember { mutableStateListOf<String?>() } // Güncellenen röle adları.
-    val snackbarHostState = remember { SnackbarHostState() } // Snackbar durumunu yönetir.
+    val isLoading = deviceVM.relayLoading.collectAsState()
+    var isEditing by remember { mutableStateOf(false) }
+    val updatedRelays = remember { mutableStateListOf<String?>() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     // İlk yükleme
@@ -72,11 +72,17 @@ fun UpdateRelays(deviceId: Long) {
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) // Snackbar için host
+            Box(modifier = Modifier.fillMaxSize()) {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(16.dp)
+                )
+            }
         },
         content = { padding ->
             if (isLoading.value) {
-                // Yükleme göstergesi
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
