@@ -59,7 +59,8 @@ fun TimedCommandSheet(
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -68,6 +69,7 @@ fun TimedCommandSheet(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(4.dp)
                             .clickable {
                                 selectedRelay = index + 1
                             },
@@ -106,7 +108,9 @@ fun TimedCommandSheet(
             if (selectedRelay != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 ) {
                     Checkbox(
                         checked = isTimedRelay,

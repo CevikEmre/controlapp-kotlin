@@ -23,7 +23,7 @@ import com.emrecevik.noroncontrolapp.viewmodel.DeviceViewModel
 @Composable
 fun DeviceSelection(navController: NavController) {
     val deviceVM: DeviceViewModel = viewModel()
-    val devices = deviceVM.devices.collectAsState()
+    val adminDevices = deviceVM.adminDevices.collectAsState()
 
     LaunchedEffect(Unit) {
         deviceVM.fetchDevices()
@@ -44,14 +44,14 @@ fun DeviceSelection(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 when {
-                    devices.value.isNullOrEmpty() -> {
+                    adminDevices.value.isNullOrEmpty() -> {
                         item {
                             Text("Yüklenecek cihaz yok")
                         }
                     }
                 }
-                items(devices.value!!.size) { index ->
-                    val device = devices.value!![index]
+                items(adminDevices.value!!.size) { index ->
+                    val device = adminDevices.value!![index]
                     DeviceCard(device, navController)
                 }
             }

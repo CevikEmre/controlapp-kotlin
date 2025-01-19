@@ -7,12 +7,21 @@ import com.emrecevik.noroncontrolapp.model.response.Devices
 import com.emrecevik.noroncontrolapp.model.response.OtherClient
 import com.emrecevik.noroncontrolapp.service.DeviceService
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DeviceViewModel : ViewModel() {
+
+
     private val _devices = MutableStateFlow<List<Devices?>?>(emptyList())
     val devices: StateFlow<List<Devices?>?> = _devices
+
+    val adminDevices: StateFlow<List<Devices?>?> = devices.map { deviceList ->
+        deviceList?.filter { it?.isAdmin == true }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _users = MutableStateFlow<List<OtherClient?>?>(emptyList())
     val users: StateFlow<List<OtherClient?>?> = _users

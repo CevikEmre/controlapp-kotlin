@@ -42,16 +42,13 @@ class RelayViewModel : ViewModel() {
                     val responseBody = response.body()
                     _relayResponse.value = responseBody
                     _errorMessage.value = null
-                    _connectionError.value = false // Bağlantı hatası yok
+                    _connectionError.value = false
                     Log.i("RelayViewModel", "Başarılı Yanıt: $responseBody")
                 } else {
-                    // Hata durumunu işleme
                     val errorBody = response?.errorBody()?.string()
                         ?: "Bilinmeyen bir hata oluştu."
                     _errorMessage.value = errorBody
                     _relayResponse.value = null
-
-                    // Cihaz bağlantısı hatasını tespit etme
                     if (errorBody.contains("cihaz bağlantısı yok", ignoreCase = true) ||
                         errorBody.contains("500 Internal Server Error")
                     ) {
@@ -81,7 +78,6 @@ class RelayViewModel : ViewModel() {
             _deviceInfoLoading.value = true
             try {
                 val response = RelayService.getDeviceInfo(deviceInfoBody)
-
                 if (response?.isSuccessful == true) {
                     val responseBody = response.body()
                     _deviceInfoResponse.value = responseBody
